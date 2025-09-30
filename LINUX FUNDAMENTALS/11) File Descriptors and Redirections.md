@@ -72,9 +72,39 @@ nijatmansimov@htb[/htb]$ find /etc/ -name passwd >> stdout.txt 2>/dev/null
 
 <img width="834" height="236" alt="image" src="https://github.com/user-attachments/assets/8ed25d7a-572c-4420-97d2-cf46e599dd4b" />
 
+STDIN Axınını Fayla Yönləndirmək
+Biz həmçinin iki dənə kiçikdən işarəsi (<<) ilə standart girişimizi (STDIN) bir axın vasitəsilə əlavə edə bilərik. Linux sistem faylının End-Of-File (EOF) funksiyasından istifadə edə bilərik ki, bu da girişin sonunu müəyyənləşdirir. Növbəti nümunədə biz `cat` əmri ilə axın girişimizi oxuyacağıq və onu "stream.txt" adlı fayla yönləndirəcəyik.
 
+Fayl Deskriptorları və Yönləndirmələr
 
+```bash
+nijatmansimov@htb[/htb]$ cat << EOF > stream.txt
+```
 
+<img width="834" height="299" alt="image" src="https://github.com/user-attachments/assets/c5f9d76b-15f1-4cc6-afbd-e6711096a206" />
+
+Pipe-lar
+STDOUT-u yönləndirməyin başqa bir yolu isə pipe-lardan (|) istifadə etməkdir. Bunlar bir proqramın STDOUT nəticəsini başqa bir proqram tərəfindən emal etmək istədikdə faydalıdır. Ən çox istifadə olunan alətlərdən biri `grep`-dir və biz onu növbəti nümunədə işlədəcəyik. `grep` müəyyən etdiyimiz nümunəyə (pattern) uyğun olaraq STDOUT-u filtr etmək üçün istifadə olunur. Növbəti nümunədə biz `find` əmri ilə “/etc/” qovluğunda “.conf” uzantısına malik bütün faylları axtarırıq. Hər hansı bir səhv çıxışını isə “null device” (/dev/null) ünvanına yönləndiririk. `grep` vasitəsilə nəticələri filtr edirik və yalnız “systemd” nümunəsini ehtiva edən sətirlərin göstərilməsini təyin edirik.
+
+Fayl Deskriptorları və Yönləndirmələr
+
+```bash
+nijatmansimov@htb[/htb]$ find /etc/ -name *.conf 2>/dev/null | grep systemd
+```
+
+<img width="835" height="252" alt="image" src="https://github.com/user-attachments/assets/2e67c181-783a-41e8-ae8c-ef865b7c6b11" />
+
+Yönləndirmələr yalnız bir dəfə işləmirlər. Biz əldə etdiyimiz nəticələri başqa bir proqrama da yönləndirə bilərik. Növbəti nümunədə ümumi nəticələrin sayını hesablamaq üçün `wc` adlı alətdən istifadə edəcəyik.
+
+Fayl Deskriptorları və Yönləndirmələr
+
+```bash
+nijatmansimov@htb[/htb]$ find /etc/ -name *.conf 2>/dev/null | grep systemd | wc -l
+```
+
+<img width="838" height="189" alt="image" src="https://github.com/user-attachments/assets/f3aa47b5-91c3-4a6c-aa7b-416d8913e589" />
+
+Artıq fayl deskriptorları, yönləndirmələr və pipe-lar haqqında əsas anlayışa sahib olduğumuz üçün əmrlərimizi daha səmərəli şəkildə quraraq dəqiq ehtiyacımız olan məlumatı çıxara bilərik. Bu bilik bizə giriş və çıxışların fayllar, proseslər və sistem arasında necə axdığını idarə etməyə imkan verir və nəticədə məlumatı daha effektiv şəkildə işləyə bilirik. Bu alətlərdən istifadə etməklə tapşırıqları sadələşdirə, lazımsız addımlardan yayınaraq fayllar və sistem resursları ilə daha təşkilatlanmış və səmərəli formada işləyə bilərik. Nəticə etibarilə əməliyyatların idarə edilməsində məhsuldarlığımızı və dəqiqliyimizi artırmış oluruq.
 
 
 
