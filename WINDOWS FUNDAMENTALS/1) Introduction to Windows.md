@@ -75,13 +75,13 @@ Bir sorğu (paketin daxilində qapalı) öz **IP ünvanı** vasitəsilə təyina
 
 **RDP**-dən Linux və ya Windows işləyən hücum hostundan Windows hədəfinə qoşulmaq üçün istifadə edə bilərik. Əgər Windows hostundan Windows hədəfinə qoşuluruqsa, biz daxili RDP müştəri tətbiqindən istifadə edə bilərik, bu, **Remote Desktop Connection** (`mstsc.exe`) adlanır. Əsas istifadəni görmək üçün aşağıdakı klipə baxın:
 
-<img width="1024" height="600" alt="image" src="https://github.com/user-attachments/assets/23d888f0-6a19-4bed-bfb3-330b8c9c9f1e" />
+![UsingRemoteDesktopConnection](https://github.com/user-attachments/assets/284456ef-6edf-4a21-8da3-f9ee73d0cbd1)
 
 Bunun işləməsi üçün, hədəf Windows sistemində uzaqdan girişə artıq **icazə verilməlidir**. Defolt olaraq, Windows əməliyyat sistemlərində uzaqdan girişə icazə verilmir. HTB Akademiya komandası Akademiya laboratoriyalarına VPN vasitəsilə qoşulduqdan sonra Windows hədəflərimizin çoxunu RDP girişinə icazə vermək üçün konfiqurasiya etmişdir.
 
 **Remote Desktop Connection** həmçinin bizə qoşulma profillərini yadda saxlamağa imkan verir. Bu, İT adminləri arasında yayılmış bir vərdişdir, çünki uzaq sistemlərə qoşulmağı daha rahat edir.
 
-<img width="1024" height="600" alt="image" src="https://github.com/user-attachments/assets/eec32ebb-7dd0-4426-ae7c-a6d3c1c60deb" />
+![SavingRDPConnections](https://github.com/user-attachments/assets/757f9505-2f5e-49b9-96e7-838353b57bc3)
 
 Penetrasiya testçiləri olaraq, bir tapşırıq zamanı yadda saxlanılmış bu **Uzaq Masaüstü Fayllarını (.rdp)** axtarmaqdan faydalana bilərik.
 
@@ -90,6 +90,8 @@ Bir çox başqa Uzaq Masaüstü müştəri tətbiqləri mövcuddur, bunlardan b�
 ### xfreerdp-dən İstifadə
 
 Linux əsaslı bir hücum hostundan Windows hədəflərinə uzaqdan daxil olmaq üçün **xfreerdp** adlı bir vasitədən istifadə edə bilərik. Onun istifadəsinin rahatlığı, xüsusiyyətlər toplusu, əmr sətiri (command line) faydalılığı və səmərəliliyi səbəbindən bir çox modullarda xfreerdp-dən istifadə etdiyimizi görəcəksiniz. Pwnbox-dan əsas istifadəni görmək üçün aşağıdakı klipə baxın:
+
+![ConnectingwithXfreerdp](https://github.com/user-attachments/assets/d21397f9-b7c6-45b1-b588-d222b11d7d51)
 
 Unutmayın ki, **xfreerdp** əmrlərini əmr sətrinə kopyalayıb yapışdıra da bilərik, buna görə də seçimləri əl ilə daxil etməyə ehtiyac yoxdur. xfreerdp ilə istifadəmiz üçün bir neçə seçim mövcuddur, məsələn, hədəf hosta faylları köçürmək üçün **sürücünün yönləndirilməsi (drive redirection)**, hansılar ki, təcrübə etməyə dəyər və biz onları HTB Akademiyası daxilindəki digər modullarda əhatə edəcəyik.
 
