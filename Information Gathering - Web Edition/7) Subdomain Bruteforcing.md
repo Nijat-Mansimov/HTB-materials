@@ -134,3 +134,17 @@ if __name__ == "__main__":
     main()
 ```
 
+Istifade qaydasi:
+
+`pip install dnspython`
+
+`python3 DNS-AXFR.py inlanefreight.htb 10.129.4.12`
+
+```shell
+[+] Attempting AXFR against 10.129.4.12 for inlanefreight.htb
+www.inlanefreight.htb
+mail.inlanefreight.htb
+dev.inlanefreight.htb
+...
+[+] Total unique subdomains found: 12
+```
