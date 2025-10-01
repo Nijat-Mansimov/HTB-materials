@@ -89,3 +89,48 @@ done.
 ```
 
 Bu nümunədə, `dnsenum` söz siyahısını istifadə edərək hədəf domenin alt domenlərini brute-force üsulu ilə tapdı.
+
+
+```py
+#!/usr/bin/env python3
+import sys
+import dns.query
+import dns.zone
+import dns.resolver
+
+def usage():
+    print(f"Usage: {sys.argv[0]} <domain> <dns-server>")
+    print(f"Example: {sys.argv[0]} inlanefreight.htb 10.129.4.12")
+    sys.exit(1)
+
+def main():
+    if len(sys.argv) != 3:
+        usage()
+
+    domain = sys.argv[1]
+    dns_server = sys.argv[2]
+
+    try:
+        print(f"[+] Attempting AXFR against {dns_server} for {domain}")
+        zone = dns.zone.from_xfr(dns.query.xfr(dns_server, domain))
+        names = sorted(zone.nodes.keys())
+        subdomains = set()
+
+        for n in names:
+            record_name = str(n)
+            if record_name == "@":
+                fqdn = domain
+            else:
+                fqdn = f"{record_name}.{domain}"
+            subdomains.add(fqdn)
+            print(fqdn)
+
+        print(f"\n[+] Total unique subdomains found: {len(subdomains)}")
+
+    except Exception as e:
+        print(f"[-] Zone transfer failed: {e}")
+
+if __name__ == "__main__":
+    main()
+```
+
