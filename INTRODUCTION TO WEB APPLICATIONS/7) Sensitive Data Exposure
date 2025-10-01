@@ -1,0 +1,31 @@
+## Həssas Məlumatların İfşası (*Sensitive Data Exposure*)
+
+Əhatə etdiyimiz **bütün ön interfeys komponentləri klient tərəfində** qarşılıqlı əlaqədə olur. Buna görə də, onlara hücum edilərsə, veb tətbiqinin **əsas arxa fonuna** (*back end*) **birbaşa təhlükə yaratmır** və adətən **daimi zərərə** səbəb olmur. Lakin, bu komponentlər **klient tərəfində icra olunduğu** üçün, hər hansı bir zəiflikləri olarsa, **son istifadəçini hücum edilmək və istismar olunmaq** təhlükəsinə atırlar. Əgər bir ön interfeys zəifliyi **idarəçi istifadəçilərə hücum etmək** üçün istifadə olunarsa, bu, **icazəsiz girişə, həssas məlumatlara daxil olmaya, xidmətin pozulmasına** və daha çox şeyə səbəb ola bilər.
+
+Veb tətbiqinin nüfuzetmə sınağının böyük əksəriyyəti **arxa fon komponentlərinə və onların funksionallığına** yönəldilsə də, **potensial zəifliklər üçün ön interfeys komponentlərini sınaqdan keçirmək** də vacibdir, çünki bu tip zəifliklər bəzən **həssas funksionallığa (yəni, idarəçi paneli)** giriş əldə etmək üçün istifadə edilə bilər ki, bu da **bütün serverin təhlükə altına düşməsinə** səbəb ola bilər.
+
+**Həssas Məlumatların İfşası** (*Sensitive Data Exposure*) həssas məlumatların **son istifadəçiyə açıq mətndə** (*clear-text*) əlçatan olmasına aiddir. Bu, adətən veb tətbiqlərinin ön interfeysində, **veb səhifənin mənbə kodunda** (*source code*) və ya **səhifə mənbəyində** tapılır. Bu, tətbiqin **HTML mənbə kodudur**, serverin özündə adətən əlçatan olan **arxa fon kodu** ilə qarışdırılmamalıdır.
+
+Biz brauzerimizdə səhifənin istənilən yerində **sağ klikləyərək** və açılan menyudan **"Səhifə Mənbəyinə Bax"** (*View Page Source*) seçərək istənilən vebsaytın səhifə mənbəyinə baxa bilərik. Bəzən bir tərtibatçı veb tətbiqində **sağ klikləməni ləğv edə** bilər, lakin bu, **Ctrl + U** yazaraq və ya **Burp Suite** kimi bir veb proksisi vasitəsilə səhifə mənbəyinə baxmaqla bizi səhifə mənbəyinə baxmaqdan **yayındırmaz**. Gəlin **google.com** səhifə mənbəyinə nəzər salaq. Sağ klikləyin və **"Səhifə Mənbəyinə Bax"** seçin, brauzerimizdə **`view-source:https://www.google.com/`** URL-i ilə yeni bir tab açılacaq. Burada **HTML, JavaScript** və **xarici linkləri** görə bilərik. Bir anlıq səhifə mənbəyində gəzin.
+
+Bəzən biz **giriş etibarnamələrini** (*login credentials*), **heşləri** (*hashes*) və ya digər həssas məlumatları **veb səhifəsinin mənbə kodundakı şərhlərdə** (*comments*) və ya idxal edilən **xarici JavaScript kodu** daxilində tapa bilərik. Digər həssas məlumatlara **ifşa edilmiş linklər** və ya **kataloqlar**, hətta **ifşa edilmiş istifadəçi məlumatları** daxil ola bilər ki, bunların hamısı potensial olaraq veb tətbiqi daxilində və ya hətta veb tətbiqini dəstəkləyən infrastrukturda (**vebserver, verilənlər bazası serveri və s.**) **girişimizi daha da genişləndirmək** üçün istifadə edilə bilər.
+
+Bu səbəbdən, bir veb tətbiqini qiymətləndirərkən etməli olduğumuz ilk işlərdən biri, **ifşa edilmiş etibarnamələr** və ya **gizli linklər** kimi hər hansı bir "**aşağı asılmış meyvəni**" (*low-hanging fruit*) müəyyən edə biləcəyimizi görmək üçün onun **səhifə mənbə kodunu nəzərdən keçirməkdir**.
+
+## Nümunə
+
+İlk baxışdan, bu giriş forması qeyri-adi görünmür:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
