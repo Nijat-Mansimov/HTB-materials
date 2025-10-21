@@ -1,0 +1,23 @@
+sudo ip tuntap add user htb-ac-2159563 mode tun ligolo
+
+ip tuntap show
+
+sudo ip link set ligolo up
+
+./proxy -selfcert
+
+
+
+in target:
+
+./agent -connect 10.10.14.182:11601 -ignore-cert
+
+in kali:
+
+session
+
+other terminal:
+
+sudo ip route add 172.16.119.0/24 dev ligolo
+
+ip route list
