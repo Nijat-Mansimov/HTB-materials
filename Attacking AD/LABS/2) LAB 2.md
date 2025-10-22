@@ -98,6 +98,9 @@ Bu host fayl və verilənlər bazası xidmətlərinə malikdir:
 
 ## QUESTION
 
+From your scans, what is the "commonName" of host 172.16.5.5 ?
+
+## ANSWER
 Ən uyğun və birbaşa hostu təyin edən commonName dəyəri 3389/tcp portundan gəlir:
 
 ACADEMY-EA-DC01.INLANEFREIGHT.LOCAL
