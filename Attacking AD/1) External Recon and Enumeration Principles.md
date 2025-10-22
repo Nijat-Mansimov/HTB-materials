@@ -187,3 +187,14 @@ database_name : MyFitnessPal
 *Qeyd: Nümunədə istifadə olunan skript burada tapıla bilər. DeHashed-in API quruluşundakı dəyişikliklərə görə, dəyişikliklər lazım ola bilər. Alternativ olaraq, aşağıdakı skript istifadə edilə bilər. Skripti icra etməzdən əvvəl, onun funksionallığı ilə tanış olmaq **çox vacibdir**.*
 
 İndi ki, buna yiyələndik, inlanefreight.com domeni ilə əlaqəli **digər nəticələri** axtarmağa çalışın. Nə tapa bilərsiniz? Saytda yerləşdirilmiş hər hansı başqa **faydalı fayllar, səhifələr**, və ya **məlumat** varmı? Bu bölmə, əhatə daxilində qaldığımızı və səlahiyyətli olmadığımız heç bir şeyi test etmədiyimizi və öhdəliyin vaxt məhdudiyyətləri daxilində qaldığımızı təmin etməklə, hədəfimizi **hərtərəfli təhlil etməyin** vacibliyini nümayiş etdirdi. Mən daxili şəbəkədə anonim bir nöqtədən dayaq qazanmaqda çətinlik çəkdiyim və müxtəlif xarici mənbələrdən (Google, LinkedIn scraping, Dehashed, və s.) istifadə edərək bir söz siyahısı yaratdığım, sonra isə standart bir domen istifadəçi hesabı üçün **etibarlı etimadnamələr** əldə etmək üçün **hədəfli daxili şifrə çiləmə** apardığım bir neçə qiymətləndirmə keçirmişəm. Sonrakı bölmələrdə görəcəyimiz kimi, daxili AD nömrələməsinin böyük əksəriyyətini sadəcə bir sıra **aşağı imtiyazlı domen istifadəçi etimadnamələri** və hətta bir çox hücumla yerinə yetirə bilərik. **Əlimizdə bir sıra etimadnamə olduqdan sonra əyləncə başlayır.** Gəlin daxili nömrələməyə keçək və qiymətləndirməmizin əhatə dairəsi və öhdəlik qaydalarına uyğun olaraq daxili **INLANEFREIGHT.LOCAL** domenini **passiv** və **aktiv** şəkildə təhlil etməyə başlayaq.
+
+
+-----
+
+## LAB 1
+
+- While looking at inlanefreights public records; A flag can be seen. Find the flag and submit it. ( format == HTB{******} )
+
+<img width="1163" height="944" alt="image" src="https://github.com/user-attachments/assets/428a59ad-31a7-4109-8a10-41eb50d21920" />
+
+
