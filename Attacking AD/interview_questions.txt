@@ -5,4 +5,5 @@ Cavab: lokal DNS fail oldugu zaman cihaz domain resolve etmek ucun LLMNR istifad
 Cavab: SMB relay attacklarini yol acir bir basa hostun NetNTLMv2 hash'ni elde ede bilirik ve onu crack etmek cox sadedir
 
 3) SMB relay attackinin qarsinin nece almaq olar?
-Cavab: ilk olaraq tebii ki bloklamaq gelir agla ama GP daxilinde yalnizca LLMNR bloklamaq mumkundur NetBIOS'u ise her cihazin daxilinde network adapter propertilerinden bloklamaq lazimdi birbasa GPO ile mumkun deyil. bunun ucun maksimum bir powershell script yazilib GPo elave edilmelidir
+Cavab: ilk olaraq tebii ki bloklamaq gelir agla ama GP daxilinde yalnizca LLMNR bloklamaq mumkundur NetBIOS'u ise her cihazin daxilinde network
+adapter propertilerinden bloklamaq lazimdi birbasa GPO ile mumkun deyil. bunun ucun maksimum bir powershell script yazilib GPo elave edilmelidir
