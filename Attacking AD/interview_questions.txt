@@ -21,3 +21,4 @@ Hücum qaynağını müəyyən etmək üçün qaynağın IP ünvanını DNS reve
 Proses yaradılması üzrə sorğu: powershell.exe və command-line içində -Version 2 və ya -v 2 kimi ifadələrə baxmaq.
 
 PowerShell v2 deaktivləşdirilməsi (mümkün olduqda) — köhnə versiyanın zərərsiz olduğu halda belə, onu saxlamaq riski artırır. (İdarəçi yolla və ya Group Policy ilə tətbiq edilməlidir.)
+
