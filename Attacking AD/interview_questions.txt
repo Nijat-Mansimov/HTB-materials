@@ -16,3 +16,8 @@ Event ID 4625 hadisələrini analiz edərdim — hansı hesabların təsirləndi
 
 Hücum qaynağını müəyyən etmək üçün qaynağın IP ünvanını DNS reverse lookup və ya SIEM üzərindən enrichment edərdim
 
+5) Sual: Bir işçi hostda PowerShell-in bir neçə versiyasının quraşdırıla biləcəyini və bəzi hallarda hücumçuların PowerShell 2.0 və ya daha köhnə versiyaları çağıraraq sistemdəki PowerShell loqlarından yayınmağa çalışdıqlarını öyrəndiniz. Siz SOC analitikisiniz — bu vəziyyəti necə aşkar edər, nə kimi axtarış/hunt qaydaları tətbiq edər, hansı log və konfiqurasiyalara üstünlük verər və belə hücumların qarşısını almaq üçün nə tövsiyə edərdiniz?
+
+Proses yaradılması üzrə sorğu: powershell.exe və command-line içində -Version 2 və ya -v 2 kimi ifadələrə baxmaq.
+
+PowerShell v2 deaktivləşdirilməsi (mümkün olduqda) — köhnə versiyanın zərərsiz olduğu halda belə, onu saxlamaq riski artırır. (İdarəçi yolla və ya Group Policy ilə tətbiq edilməlidir.)
