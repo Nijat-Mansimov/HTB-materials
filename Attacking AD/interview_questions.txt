@@ -22,3 +22,15 @@ Proses yaradılması üzrə sorğu: powershell.exe və command-line içində -Ve
 
 PowerShell v2 deaktivləşdirilməsi (mümkün olduqda) — köhnə versiyanın zərərsiz olduğu halda belə, onu saxlamaq riski artırır. (İdarəçi yolla və ya Group Policy ilə tətbiq edilməlidir.)
 
+6) Tesevvur et ki ACL evasion attack bas veribdi
+eli adinda istifadeci ogurlanib ve onun elnur adinda istifadeci uzerinde parolunu deyismek huququ var
+elnurun parolunu deyisir ve elnurun da help desk qrupunda GenericWrite accessi var yeni ozunu help desk qrupuna elave etmek huququ var ora elave edir 
+Help Desk Level qrupu Information Technology qrupuna daxildir. Yəni, bu qrupa daxil olan istənilən istifadəçi həm də Information Technology qrupunun bütün hüquqlarını qazanır.
+Information Technology qrupunun aysel istifadəçisi üzərində GenericAll (Tam Ümumi Nəzarət) hüququ var. Bu, ayselin şifrəsini dəyişməyə və ya Kerberoasting hücumunu həyata keçirməyə imkan verir.
+
+Cavab:
+Təhlükəli ACL-ləri yoxlamaq və çıxarmaq
+Qrup üzvlüyünə nəzarət edin
+ACL dəyişiklikləri üçün audit və monitor
+Enabling the Advanced Security Audit Policy can help in detecting unwanted changes
+Enabling the Advanced Security Audit Policy can help in detecting unwanted changes, especially Event ID 5136: A directory service object was modified which would indicate that the domain object was modified, which could be indicative of an ACL attack. If we look at the event log after modifying the ACL of the domain object, we will see some event ID 5136 created:
