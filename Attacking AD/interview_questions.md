@@ -1,162 +1,247 @@
-1) LLMNR (link local name resolution) ve NBT-NS(NetBIOS name service) nedir?
-Cavab: lokal DNS fail oldugu zaman cihaz domain resolve etmek ucun LLMNR istifade ederek diger hostlardan sorusur eger LLMNR fail olsa bu zaman NBT-NS ise dusur.
-
-2) LLMNR ve NBT-NS istifade ederek hansi hucumlari reallasdirmaq olar?
-Cavab: SMB relay attacklarini yol acir bir basa hostun NetNTLMv2 hash'ni elde ede bilirik ve onu crack etmek cox sadedir
-
-3) SMB relay attackinin qarsinin nece almaq olar?
-Cavab: ilk olaraq tebii ki bloklamaq gelir agla ama GP daxilinde yalnizca LLMNR bloklamaq mumkundur NetBIOS'u ise her cihazin daxilinde network
-adapter propertilerinden bloklamaq lazimdi birbasa GPO ile mumkun deyil. bunun ucun maksimum bir powershell script yazilib GPo elave edilmelidir
-
-4) SOC monitorinq sistemində Domain Controller-dan gələn çoxsaylı "Event ID 4625 – An account failed to log on" hadisələrini müşahidə edirsən. Bu hadisələr müxtəlif istifadəçi hesablarına aid olsa da, hamısı eyni IP ünvanından və qısa vaxt aralığında baş verir.
-Cavab: 
-Event ID 4625 hadisələrini analiz edərdim — hansı hesabların təsirləndiyini, eyni IP-dən gəlib-gəlmədiyini və vaxt intervalını yoxlayardım.
-
-Əgər hücum SMB üzərindən yox, LDAP üzərindən gəlirsə, Event ID 4771 – Kerberos pre-authentication failed hadisələrinə də baxardım.
-
-Hücum qaynağını müəyyən etmək üçün qaynağın IP ünvanını DNS reverse lookup və ya SIEM üzərindən enrichment edərdim
-
-5) Sual: Bir işçi hostda PowerShell-in bir neçə versiyasının quraşdırıla biləcəyini və bəzi hallarda hücumçuların PowerShell 2.0 və ya daha köhnə versiyaları çağıraraq sistemdəki PowerShell loqlarından yayınmağa çalışdıqlarını öyrəndiniz. Siz SOC analitikisiniz — bu vəziyyəti necə aşkar edər, nə kimi axtarış/hunt qaydaları tətbiq edər, hansı log və konfiqurasiyalara üstünlük verər və belə hücumların qarşısını almaq üçün nə tövsiyə edərdiniz?
-
-Proses yaradılması üzrə sorğu: powershell.exe və command-line içində -Version 2 və ya -v 2 kimi ifadələrə baxmaq.
-
-PowerShell v2 deaktivləşdirilməsi (mümkün olduqda) — köhnə versiyanın zərərsiz olduğu halda belə, onu saxlamaq riski artırır. (İdarəçi yolla və ya Group Policy ilə tətbiq edilməlidir.)
-
-6) Tesevvur et ki ACL evasion attack bas veribdi
-eli adinda istifadeci ogurlanib ve onun elnur adinda istifadeci uzerinde parolunu deyismek huququ var
-elnurun parolunu deyisir ve elnurun da help desk qrupunda GenericWrite accessi var yeni ozunu help desk qrupuna elave etmek huququ var ora elave edir 
-Help Desk Level qrupu Information Technology qrupuna daxildir. Yəni, bu qrupa daxil olan istənilən istifadəçi həm də Information Technology qrupunun bütün hüquqlarını qazanır.
-Information Technology qrupunun aysel istifadəçisi üzərində GenericAll (Tam Ümumi Nəzarət) hüququ var. Bu, ayselin şifrəsini dəyişməyə və ya Kerberoasting hücumunu həyata keçirməyə imkan verir.
-
-Cavab:
-Təhlükəli ACL-ləri yoxlamaq və çıxarmaq
-Qrup üzvlüyünə nəzarət edin
-ACL dəyişiklikləri üçün audit və monitor
-Enabling the Advanced Security Audit Policy can help in detecting unwanted changes
-Enabling the Advanced Security Audit Policy can help in detecting unwanted changes, especially Event ID 5136: A directory service object was modified which would indicate that the domain object was modified, which could be indicative of an ACL attack. If we look at the event log after modifying the ACL of the domain object, we will see some event ID 5136 created:
-
-Əla 💪 — indi dəqiq anlayıram nə istəyirsən:
-Sənə **Bleeding Edge Vulnerabilities** bölməsinə (yəni **NoPac, PrintNightmare, PetitPotam**) əsaslanan **sadə, lakin texniki SOC Analyst müsahibə sualları** lazımdır — yəni CVE-lərin detalları yox, **təhlükənin tanınması və qarşısının alınması (prevention/detection)** yönümlü, real intervü səviyyəsində.
-
-Aşağıda bu mövzuya uyğun **10 konkret SOC sualı və cavabı** təqdim edirəm 👇
-Hər biri qısa, lakin texniki və real müsahibə üçün praktik səviyyədədir.
+Aşağıda göndərdiyin bütün mətnın **səliqəli, bölmələnmiş və oxunaqlı** Azərbaycan dilində versiyasını təqdim edirəm. Hər bölmə başlıqlarla ayrılıb, əmrlər və tövsiyələr kod blokları ilə vurğulanıb — müsahibə, SOC playbook və notlar üçün bir sənəd şəklində istifadə edə bilərsən.
 
 ---
 
-## 🧠 **SOC Analyst – Bleeding Edge Vulnerabilities üzrə Suallar və Cavablar**
+# Təhlükəsizlik Qeydləri — Qısa və Texniki İzah (Səliqəli Format)
 
 ---
 
-### **1️⃣ SOC analitiki NoPac hücumunu necə aşkar edə bilər?**
+## 1. LLMNR və NBT-NS nədir?
 
+**Sual:** LLMNR (Link-Local Multicast Name Resolution) və NBT-NS (NetBIOS Name Service) nədir?
 **Cavab:**
-Active Directory loglarında **kompüter hesabının adının dəyişdirilməsi** (Event ID 4742) və ya **yeni kompüter hesabı yaradılması** (Event ID 4741) hadisələrinə baxmaq lazımdır.
-Əgər bu əməliyyat **adi istifadəçi** tərəfindən edilibsə — bu, şübhəlidir.
 
-**Əlavə:** SIEM qaydası → “User created or renamed a computer account”.
+* **LLMNR**: Lokal DNS işləmədiyi zaman cihazın domen adını həll etmək üçün istifadə etdiyi link-local adlı protokoldur — şəbəkədəki digər hostlara multicast sorğu göndərir.
+* **NBT-NS**: Əgər LLMNR işləməsə, NetBIOS adı ilə bağlı sorğular üçün NBT-NS (NetBIOS Name Service) istifadə olunur. Nəticədə, ad həlli üçün LLMNR → NBT-NS ardıcıllığına baxıla bilər.
 
 ---
 
-### **2️⃣ NoPac hücumuna qarşı hansı tədbirlər görülməlidir?**
+## 2. LLMNR və NBT-NS vasitəsilə hansı hücumlar həyata keçirilə bilər?
 
 **Cavab:**
 
-* Microsoft-un **2021 dekabr yamasını** tətbiq etmək.
-* Adi istifadəçilərin **kompüter hesabı yaratma icazəsini** məhdudlaşdırmaq (`ms-DS-MachineAccountQuota = 0`).
-* “Computer account rename” fəaliyyətlərini monitorinqdə saxlamaq.
+* Bu protokollar **SMB relay** və **NetNTLMv2 hash** oğurlama hücumlarına (capture & relay) yol açır.
+* Hücumçu şəbəkədə LLMNR/NBT-NS üçün sahte (poisoned) cavab verərək SMB bağlantısı tələb edə bilər və hostun NetNTLMv2 hash-ini ələ keçirə bilər.
+* NetNTLMv2 hash-ləri crack etmək nisbətən asandır və daha sonra lateral movement və ya hesab oğurluğu üçün istifadə oluna bilər.
 
 ---
 
-### **3️⃣ PrintNightmare zəifliyini SOC səviyyəsində necə aşkar etmək olar?**
+## 3. SMB relay hücumunun qarşısını necə almaq olar?
+
+**Cavab (qısa):**
+
+1. **LLMNR və NBT-NS-i blokla** (şəbəkədə və ya GPO yoluyla mümkün olduqda).
+2. **NetBIOS (NBT)** üçün qlobal GPO ilə tam bloklama mümkün olmadığından, hər cihazda network adapter parametrlərindən deaktiv etmək daha məntiqlidir — və ya GPO ilə PowerShell skripti tətbiq edərək avtomatlaşdırmaq lazımdır.
+3. **SMB signing** və **LDAP/SMB channel binding** aktivləşdirin.
+4. NTLM relay üçün **Extended Protection for Authentication (EPA)** tətbiq edin.
+
+**Qeyd:** LLMNR-i yalnız GPO ilə bloklamaq mümkündür; NetBIOS-u isə cihaz səviyyəsində konfiqurasiya və ya GPO ilə skriptləşdirmə tələb olunur.
+
+---
+
+## 4. SOC vəziyyəti: Domain Controller-dan gələn çoxsaylı Event ID 4625 hadisələri
+
+**Sual:** Domain Controller-dan çoxsaylı "Event ID 4625 – An account failed to log on" hadisələri gəlir; müxtəlif istifadəçi hesabları olsa da hamısı eyni IP-dən və qısa vaxt aralığında. Nələr edərsən?
+**Cavab (təklif olunan addımlar):**
+
+1. **Triage & ilkin analiz**
+
+   * Hər 4625 hadisəsinin `Account Name`, `Workstation Name`, `Source IP` və `Time` sahələrini çıxar.
+2. **Pattern axtarışı**
+
+   * Eyni IP-dən eyni vaxt intervalında fərqli hesablar üzərində uğursuz giriş cəhdləri — bu, brute-force / credential stuffing / relay göstəricisi ola bilər.
+3. **Əlavə loglara bax**
+
+   * Əgər SMB-dən başqa LDAP və ya Kerberos ilə bağlı səylər varsa, `Event ID 4771` (Kerberos pre-auth failed) və `4624`(successful) və `4648` (explicit creds) kimi hadisələrə bax.
+4. **Kontekst zənginləşdirmə (Enrichment)**
+
+   * Mənbə IP üçün reverse DNS, coğrafi lokasiya, asset owner və asset criticality.
+5. **Containment & bloklama**
+
+   * Şübhəli IP-ni firewall / IDS/IPS / WAF səviyyəsində məhdudlaşdır və şübhəli hesabları (və ya IP) müvəqqəti blokla.
+6. **Eskalasiyə & IR**
+
+   * Tier-2 / Incident Response komandalarına ötür və lazım gələrsə müvafiq hesablarda parol sıfırlama və MFA tətbiq et.
+7. **Post-incident**
+
+   * İnsident root cause təhlili, zəruri yamaların tətbiqi, SIEM qaydalarının və playbook-ların yenilənməsi.
+
+---
+
+## 5. PowerShell versiyaları və hücumların aşkar edilməsi
+
+**Sual:** PowerShell-in köhnə versiyalarını (məsələn v2) istifadə edən hücumları necə aşkar edərsən və qarşısını necə alarsan?
+**Cavab (hunting & prevention):**
+
+### Detection / Hunt qaydaları:
+
+* **Proses yaradılması üzrə axtarış:** `powershell.exe` prosesinin command-line parametrlərində `-Version 2`, `-v 2` və ya `-NoProfile -EncodedCommand` kimi şübhəli flag-lərə bax.
+* **Event loglar:**
+
+  * Windows PowerShell əmrləri üçün `Event ID 4103`/`4104` (Script Block Logging enabled olduqda).
+  * Process Creation üçün `4688` (vs. Sysmon Event ID 1) — command line ilə birlikdə.
+* **EncodedCommand / AMSI bypass:** `-EncodedCommand` istifadə edənləri xüsusi qayda ilə tut.
+
+### Prevention tövsiyələri:
+
+* Köhnə PowerShell versiyasını mümkündürsə **deaktiv et** (PowerShell v2 disable).
+* **Script Block Logging** və **Module Logging** aktiv et (Group Policy ilə).
+* **Constrained Language Mode**, AppLocker/WDAC ilə qeyri-məqbul skriptlərin icrasını məhdudlaşdır.
+* EDR ilə PowerShell fəaliyyətini izləyib anomaliyaları bildir.
+
+**Praktik axtarış nümunəsi (process creation):**
+
+```text
+powershell.exe ... -Version 2
+powershell.exe ... -v 2
+powershell.exe -EncodedCommand <...>
+```
+
+---
+
+## 6. ACL Evasion Attack — Senari və nə etmək lazımdır
+
+**Senari qısa:**
+
+* `eli` adlı istifadəçi oğurlanıb.
+* `eli` `elnur` üzərində parol dəyişmə hüququna malikdir.
+* `eli` `elnur`un parolunu dəyişir.
+* `elnur` Help Desk qrupunda `GenericWrite` icazəsinə malikdir və `elnur` özünü Help Desk qrupuna daxil etmə hüququna sahibdir.
+* Help Desk qrupuna daxil olmaq Information Technology (IT) qrupuna da aidiyət verir.
+* IT qrupunun üzvü `aysel` üzərində `GenericAll` (tam nəzarət) hüququna malikdir → nəticədə `eli` → `elnur` → Help Desk → IT → `aysel` üzərindən tam nəzarət və Kerberoast/şifrə dəyişmə mümkün olur.
+
+**Aşkar etmə və müdafiə addımları (SOC və IR üçün):**
+
+### Detection:
+
+1. **ACL dəyişiklikləri üçün audit:** `Advanced Security Audit Policy` aktiv et. Vacib Event ID:
+
+   * `5136` — A directory service object was modified (ACL dəyişikliklərini göstərir).
+2. **Group membership dəyişiklikləri:** Event ID `4728/4729/4732/4733` (group add/remove) üçün SIEM qaydaları.
+3. **Computer / Account attribute dəyişiklikləri:** 4741/4742 və s.
+4. **Anomaliya detection:** Qısa müddətdə yüksək imtiyazların şəbəkə daxilində bir neçə hop ilə ötürülməsi.
+5. **Kerberoasting / SPN sorğuları:** Kimsə çox sayda kerberoast-able SPN hesabları üçün sorğu edirsə, bu göstəricidir.
+
+### Preventive / Remedial measures:
+
+1. **ACL-ləri yoxla və düzəlt:** Şübhəli `GenericWrite/GenericAll` icazələrini inzibati qaydada təftiş et və mümkün olduqda least-privilege prinsipi tətbiq et.
+2. **Group membership governance:** Help Desk və IT qruplarının üzvlərini və onlara təsir edən delegasiyaları nəzərdən keçir.
+3. **Change control və monitoring:** ACL və group membership dəyişiklikləri üçün avtomatik bildirişlər və onay sistemi.
+4. **Audit və logging:** `5136` kimi hadisələri korrelyasiya edən qaydalar əlavə et.
+5. **MFA və parol siyasətləri:** Yüksək imtiyazlı hesablar üçün MFA məcburi et və parolları gücləndir.
+6. **Hesab mütəmadi təmizləmə & least privilege review.**
+
+---
+
+## 7. Müsahibə üçün (Bleeding Edge Vulnerabilities mövzusundan) — Qısa, Texniki və Praktik 10 sual + cavab
+
+Aşağıda NoPac, PrintNightmare və PetitPotam və ümumi detection/prevention ilə bağlı **qısa, texniki və praktik** suallar və gözlənilən cavablar var — SOC analyst müsahibələri üçün istifadə et.
+
+---
+
+### Sual 1 — NoPac hücumunu SIEM-də necə aşkar edərdin?
+
+**Cavab:** AD event-lərindən `4741` (Computer created) və `4742` (Computer renamed) qaydalarını monitorinq et; kompüter adı DC ilə uyğunlaşırsa şübhə doğur. Alert: “Computer account created/renamed by non-admin user”.
+
+---
+
+### Sual 2 — NoPac qarşısında ən vacib önləyici tədbir nədir?
+
+**Cavab:** Microsoft 2021 patch-lərini tətbiq et və `ms-DS-MachineAccountQuota` dəyərini 0 ilə limitlə (adi istifadəçilərin kompüter hesabı yaratma hüququnu qaldır).
+
+---
+
+### Sual 3 — PrintNightmare üçün hansı Windows xidməti kritikdir və nəyi izləmək lazımdır?
+
+**Cavab:** `Print Spooler (spoolsv.exe)` — `7045` (service installed) və `4688` (process creation) event-lərini izləyin; `spoolsv.exe` tərəfindən qeyri-adi DLL yüklənməsi və ya PowerShell çağırışları şübhəlidir.
+
+---
+
+### Sual 4 — PrintNightmare qarşısında əsas əməli tədbir nə ola bilər?
+
+**Cavab:** DC-lərdə Print Spooler xidmətini dayandırın və ya mümkün olmadıqda sürücü yükləmələri üçün hüquqları məhdudlaşdırın; rəsmi KB yamaqlarını tətbiq edin.
+
+---
+
+### Sual 5 — PetitPotam hücumu nə edir və SOC bunu necə görməlidir?
+
+**Cavab:** PetitPotam DC-ni EFSRPC çağırışı ilə NTLM autentifikasiyasına məcbur edərək sertifikat əldə etməyə və PKINIT yolları ilə TGT əldə etməyə imkan verir. SOC: DC-dən xarici hostlara gedən NTLM autentifikasiyasını izləməlidir.
+
+---
+
+### Sual 6 — PetitPotam üçün ən təsirli preventiv tədbir nədir?
+
+**Cavab:** NTLM relay hücumlarına qarşı **Extended Protection for Authentication (EPA)** aktiv et, LDAP/SMB signing tətbiq et, SMBv1 və EFSRPC imkanlarını məhdudlaşdır.
+
+---
+
+### Sual 7 — Hangi Event ID-lər kritikdir (NoPac, PrintNightmare, PetitPotam üçün)?
 
 **Cavab:**
-Spooler xidməti (`spoolsv.exe`) tərəfindən **DLL yükləmə** və ya **CreateProcess** hadisələrini (Event ID 7045, 4688) izləmək.
-Əgər `spoolsv.exe` qeyri-adi DLL-lər və ya PowerShell prosesləri başladırsa — exploit ehtimalı var.
+
+* NoPac: `4741`, `4742`
+* PrintNightmare: `7045`, `4688`
+* PetitPotam: `4624` (NTLM logon), `4648` (explicit creds), və DC-dən gələn NTLM sorğuları.
 
 ---
 
-### **4️⃣ PrintNightmare qarşısını almaq üçün hansı praktiki addım atılır?**
+### Sual 8 — Kerberos biletlərində anomaliyanı necə aşkarlamaq olar?
 
-**Cavab:**
-
-* **Print Spooler** xidmətini DC-lərdə tam dayandırmaq:
-
-  ```
-  Stop-Service Spooler
-  Set-Service Spooler -StartupType Disabled
-  ```
-* Administrator olmayan istifadəçilərin printer sürücüsü yükləməsini məhdudlaşdırmaq.
-* Microsoft-un **KB5004945** yamasını quraşdırmaq.
+**Cavab:** Non-admin istifadəçilərin DC və yüksək imtiyazlı xidmətlər üçün TGT/TGS istəməsi anomaliya sayılır — SIEM-də “Unusual Kerberos service ticket request” qaydası qur.
 
 ---
 
-### **5️⃣ PetitPotam hücumunun əsas məqsədi nədir və SOC bunu necə görə bilər?**
-
-**Cavab:**
-PetitPotam **NTLM relay** vasitəsilə DC-nin kimlik məlumatlarını oğurlamaq üçün istifadə olunur.
-SOC analitiki **NTLM autentifikasiya tələblərini** və **EFSRPC çağırışlarını** izləməlidir.
-Əgər DC NTLM ilə xarici serverə autentifikasiya etməyə çalışırsa — bu şübhəlidir.
-
----
-
-### **6️⃣ PetitPotam qarşısını almaq üçün ən effektiv üsul nədir?**
-
-**Cavab:**
-
-* **NTLM Relay** hücumlarını bloklamaq üçün **Extended Protection for Authentication (EPA)** aktiv etmək.
-* **LDAP signing** və **SMB signing** aktiv olmalıdır.
-* EFSRPC servisini və SMBv1 protokolunu deaktiv etmək.
-
----
-
-### **7️⃣ SOC analitiki üçün hansı log Event ID-lər bu hücumlarla bağlı önəmlidir?**
-
-**Cavab:**
-
-| Hücum              | Vacib Event ID-lər                                |
-| ------------------ | ------------------------------------------------- |
-| **NoPac**          | 4741 (Computer created), 4742 (Computer renamed)  |
-| **PrintNightmare** | 7045 (Service installed), 4688 (Process creation) |
-| **PetitPotam**     | 4624 (NTLM Logon), 4648 (Explicit logon)          |
-
----
-
-### **8️⃣ Kerberos biletləri ilə bağlı anomaliyalar SOC səviyyəsində necə görünür?**
-
-**Cavab:**
-Əgər **adi istifadəçi hesabı** DC və ya yüksək imtiyazlı servislər üçün **TGT/TGS bileti** istəyirsə — bu anomaliyadır.
-SIEM-də “Unusual Kerberos service ticket request” qaydası ilə aşkarlanır.
-
----
-
-### **9️⃣ SOC analitiki SIEM-də bu zəifliklər üçün hansı növ qaydalar yarada bilər?**
+### Sual 9 — SIEM qaydaları nümunəsi — nə yaratmalısan?
 
 **Cavab:**
 
 * “User created computer account outside IT OU”
-* “Spoolsv.exe spawned child process (PowerShell, cmd.exe)”
-* “NTLM authentication from DC to external host”
+* “Spoolsv.exe spawned child process (PowerShell/cmd.exe)”
+* “NTLM authentication from Domain Controller to external host”
 * “Unusual Kerberos TGT request by non-admin user”
 
 ---
 
-### **🔟 Zəiflik aşkarladıqdan sonra SOC analitiki hansı addımları atmalıdır?**
+### Sual 10 — Zəiflik aşkarladıqdan sonra SOC analitiki hansı əsas addımları atmalıdır?
 
-**Cavab:**
-
-1. **Alert triage** – hadisənin təcili dərəcəsini müəyyən etmək.
-2. **Log correlation** – istifadəçi, IP və vaxtla əlaqəli digər logları birləşdirmək.
-3. **Incident containment** – kompromit olunmuş hesabı və hostu təcrid etmək.
-4. **Escalation** – Tier-2 və ya IR (Incident Response) komandalarına ötürmək.
-5. **Patch validation** – müvafiq sistemin yamaqlarının tətbiqini yoxlamaq.
+**Cavab:** Alert triage → Log correlation → Containment (izolyasiya / bloklama) → Escalation to IR → Post-incident remediation & patch validation.
 
 ---
 
-İstəsən, mən bu sualları **iki hissəyə bölüb** sənə ayrıca:
+## 8. Əlavə: Faydalı əmrlər və monitoring qaydaları (qısa)
 
-* 🧩 “Detection & Monitoring sualları”
-* 🛡️ “Prevention & Mitigation sualları”
+* **PowerShell detection (hunt):**
 
-şəklində PDF və ya DOC formatında müsahibə vərəqi kimi tərtib edə bilərəm.
-İstəyirsən onu hazırlayım?
+  ```text
+  powershell.exe ... -Version 2
+  powershell.exe ... -v 2
+  powershell.exe -EncodedCommand <...>
+  ```
+* **Disable Print Spooler on DCs:**
 
+  ```powershell
+  Stop-Service Spooler
+  Set-Service Spooler -StartupType Disabled
+  ```
+* **Check ms-DS-MachineAccountQuota (AD):**
+
+  ```powershell
+  Get-ADObject -SearchBase "CN=Directory Service,CN=Windows NT,CN=Services,CN=Configuration,DC=domain,DC=local" -Filter *
+  ```
+
+  (Admin əmrləri AD konfiqurasiyasına görə fərqli ola bilər.)
+
+---
+
+## 9. Nəticə və Tövsiyələr (qısa)
+
+1. **Yamaqları vaxtında tətbiq et.** NoPac, PrintNightmare və PetitPotam üçün rəsmi Microsoft yamalarını prioritetləşdir.
+2. **Least privilege** və qrup üzvlüklərinə nəzarət — ACL-ləri və delegation-ları təftiş et.
+3. **SIEM ilə proaktiv monitorinq** — yuxarıda göstərilən Event ID-lər, proses yaradılması, Kerberos anomaliyaları üçün qaydalar qur.
+4. **Network-level qorunma** — LLMNR/NBT-NS deaktivləşdir, SMB/LDAP signing və EPA aktiv et.
+5. **EDR/AV konfiqurasiyası** — suspicious smbexec/printspooler davranışlarını bloklasın və alert versin.
+6. **Audit & forensic readiness** — `Advanced Security Audit Policy` aktiv olsun və `5136`, `4741/4742`, `7045`, `4688`, `4624/4625/4771` kimi event-lar saxlanılsın.
+
+---
+
+Əgər istəyirsən, bu sənədi PDF və ya DOCX formatına çevirib yükləmək üçün hazırlaya bilərəm — həmçinin hər bölmə üçün qısa “playbook” (SIEM qaydaları + IR addımları) düzəldə bilərəm. Hansısını istərdin?
